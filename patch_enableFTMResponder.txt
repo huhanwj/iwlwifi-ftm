@@ -1,0 +1,88 @@
+Binary files LinuxCore30/.DS_Store and LinuxCore30_fixed/.DS_Store differ
+Binary files LinuxCore30/drivers/net/wireless/intel/.DS_Store and LinuxCore30_fixed/drivers/net/wireless/intel/.DS_Store differ
+Binary files LinuxCore30/drivers/net/wireless/intel/iwlwifi/.DS_Store and LinuxCore30_fixed/drivers/net/wireless/intel/iwlwifi/.DS_Store differ
+Binary files LinuxCore30/drivers/net/wireless/intel/iwlwifi/fw/.DS_Store and LinuxCore30_fixed/drivers/net/wireless/intel/iwlwifi/fw/.DS_Store differ
+diff -ruN LinuxCore30/drivers/net/wireless/intel/iwlwifi/mvm/constants.h LinuxCore30_fixed/drivers/net/wireless/intel/iwlwifi/mvm/constants.h
+--- LinuxCore30/drivers/net/wireless/intel/iwlwifi/mvm/constants.h	2017-09-20 04:04:11.000000000 -0400
++++ LinuxCore30_fixed/drivers/net/wireless/intel/iwlwifi/mvm/constants.h	2018-01-29 12:19:45.000000000 -0500
+@@ -112,7 +112,7 @@
+ #define IWL_MVM_QUOTA_THRESHOLD			4
+ #define IWL_MVM_RS_RSSI_BASED_INIT_RATE         0
+ #define IWL_MVM_RS_80_20_FAR_RANGE_TWEAK	1
+-#define IWL_MVM_TOF_IS_RESPONDER		0
++#define IWL_MVM_TOF_IS_RESPONDER		1
+ #define IWL_MVM_SW_TX_CSUM_OFFLOAD		0
+ #define IWL_MVM_HW_CSUM_DISABLE			1
+ #define IWL_MVM_PARSE_NVM			0
+Binary files LinuxCore30/net/.DS_Store and LinuxCore30_fixed/net/.DS_Store differ
+diff -ruN LinuxCore30/net/wireless/nl80211.c LinuxCore30_fixed/net/wireless/nl80211.c
+--- LinuxCore30/net/wireless/nl80211.c	2017-09-20 04:04:11.000000000 -0400
++++ LinuxCore30_fixed/net/wireless/nl80211.c	2018-01-29 12:12:11.000000000 -0500
+@@ -4000,6 +4000,42 @@
+ 	}
+ }
+ 
++static int nl80211_start_ftm_responder(struct sk_buff *skb,
++				       struct genl_info *info)
++{
++	struct cfg80211_registered_device *rdev = info->user_ptr[0];
++	struct net_device *dev = info->user_ptr[1];
++	struct wireless_dev *wdev = dev->ieee80211_ptr;
++	struct cfg80211_ftm_responder_params params = {};
++	int err;
++
++	if (wdev->iftype != NL80211_IFTYPE_AP || !wdev->beacon_interval)
++		return -EOPNOTSUPP;
++
++	if (info->attrs[NL80211_ATTR_LCI]) {
++		if (nla_len(info->attrs[NL80211_ATTR_LCI]) > U8_MAX)
++			return -EINVAL;
++
++		params.lci = nla_data(info->attrs[NL80211_ATTR_LCI]);
++		params.lci_len = nla_len(info->attrs[NL80211_ATTR_LCI]);
++	}
++
++	if (info->attrs[NL80211_ATTR_CIVIC]) {
++		if (nla_len(info->attrs[NL80211_ATTR_CIVIC]) > U8_MAX)
++			return -EINVAL;
++
++		params.civic = nla_data(info->attrs[NL80211_ATTR_CIVIC]);
++		params.civic_len = nla_len(info->attrs[NL80211_ATTR_CIVIC]);
++	}
++
++	wdev_lock(wdev);
++	err = rdev_start_ftm_responder(rdev, dev, &params);
++	wdev_unlock(wdev);
++
++	return err;
++}
++
++
+ static int nl80211_start_ap(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct cfg80211_registered_device *rdev = info->user_ptr[0];
+@@ -4186,6 +4222,8 @@
+ 
+ 	kfree(params.acl);
+ 
++	nl80211_start_ftm_responder(skb, info);
++	
+ 	return err;
+ }
+ 
+@@ -12943,6 +12981,7 @@
+ 	return err;
+ }
+ 
++/*
+ static int nl80211_start_ftm_responder(struct sk_buff *skb,
+ 				       struct genl_info *info)
+ {
+@@ -12977,6 +13016,7 @@
+ 
+ 	return err;
+ }
++*/
+ 
+ static int nl80211_get_ftm_responder(struct sk_buff *skb,
+ 				     struct genl_info *info)

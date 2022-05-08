@@ -4000,6 +4000,42 @@ static bool nl80211_valid_auth_type(struct cfg80211_registered_device *rdev,
 	}
 }
 
+static int nl80211_start_ftm_responder(struct sk_buff *skb,
+				       struct genl_info *info)
+{
+	struct cfg80211_registered_device *rdev = info->user_ptr[0];
+	struct net_device *dev = info->user_ptr[1];
+	struct wireless_dev *wdev = dev->ieee80211_ptr;
+	struct cfg80211_ftm_responder_params params = {};
+	int err;
+
+	if (wdev->iftype != NL80211_IFTYPE_AP || !wdev->beacon_interval)
+		return -EOPNOTSUPP;
+
+	if (info->attrs[NL80211_ATTR_LCI]) {
+		if (nla_len(info->attrs[NL80211_ATTR_LCI]) > U8_MAX)
+			return -EINVAL;
+
+		params.lci = nla_data(info->attrs[NL80211_ATTR_LCI]);
+		params.lci_len = nla_len(info->attrs[NL80211_ATTR_LCI]);
+	}
+
+	if (info->attrs[NL80211_ATTR_CIVIC]) {
+		if (nla_len(info->attrs[NL80211_ATTR_CIVIC]) > U8_MAX)
+			return -EINVAL;
+
+		params.civic = nla_data(info->attrs[NL80211_ATTR_CIVIC]);
+		params.civic_len = nla_len(info->attrs[NL80211_ATTR_CIVIC]);
+	}
+
+	wdev_lock(wdev);
+	err = rdev_start_ftm_responder(rdev, dev, &params);
+	wdev_unlock(wdev);
+
+	return err;
+}
+
+
 static int nl80211_start_ap(struct sk_buff *skb, struct genl_info *info)
 {
 	struct cfg80211_registered_device *rdev = info->user_ptr[0];
@@ -4186,6 +4222,8 @@ static int nl80211_start_ap(struct sk_buff *skb, struct genl_info *info)
 
 	kfree(params.acl);
 
+	nl80211_start_ftm_responder(skb, info);
+	
 	return err;
 }
 
@@ -12943,6 +12981,7 @@ free_request:
 	return err;
 }
 
+/*
 static int nl80211_start_ftm_responder(struct sk_buff *skb,
 				       struct genl_info *info)
 {
@@ -12977,6 +13016,7 @@ static int nl80211_start_ftm_responder(struct sk_buff *skb,
 
 	return err;
 }
+*/
 
 static int nl80211_get_ftm_responder(struct sk_buff *skb,
 				     struct genl_info *info)
