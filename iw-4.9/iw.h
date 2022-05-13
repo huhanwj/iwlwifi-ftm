@@ -151,7 +151,7 @@ int parse_hex_mask(char *hexmask, unsigned char **result, size_t *result_len,
 unsigned char *parse_hex(char *hex, size_t *outlen);
 
 int parse_keys(struct nl_msg *msg, char **argv, int argc);
-
+enum nl80211_chan_width str_to_bw(const char *str);
 void print_ht_mcs(const __u8 *mcs);
 void print_ampdu_length(__u8 exponent);
 void print_ampdu_spacing(__u8 spacing);
