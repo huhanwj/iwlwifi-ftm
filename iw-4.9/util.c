@@ -469,6 +469,30 @@ int parse_keys(struct nl_msg *msg, char **argv, int argc)
 	return 2;
 }
 
+enum nl80211_chan_width str_to_bw(const char *str)
+{
+	static const struct {
+		const char *name;
+		unsigned int val;
+	} bwmap[] = {
+		{ .name = "5", .val = NL80211_CHAN_WIDTH_5, },
+		{ .name = "10", .val = NL80211_CHAN_WIDTH_10, },
+		{ .name = "20", .val = NL80211_CHAN_WIDTH_20, },
+		{ .name = "40", .val = NL80211_CHAN_WIDTH_40, },
+		{ .name = "80", .val = NL80211_CHAN_WIDTH_80, },
+		{ .name = "80+80", .val = NL80211_CHAN_WIDTH_80P80, },
+		{ .name = "160", .val = NL80211_CHAN_WIDTH_160, },
+	};
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(bwmap); i++) {
+		if (strcasecmp(bwmap[i].name, str) == 0)
+			return bwmap[i].val;
+	}
+
+	return NL80211_CHAN_WIDTH_20_NOHT;
+}
+
 static void print_mcs_index(const __u8 *mcs)
 {
 	int mcs_bit, prev_bit = -2, prev_cont = 0;
