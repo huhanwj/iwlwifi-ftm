@@ -5146,7 +5146,7 @@ enum nl80211_ftm_response_status {
  *	RTT values measured for the current target in the current session, given
  *	in nsec (u32)
  */
-+enum nl80211_ftm_response_entry {
+enum nl80211_ftm_response_entry {
 	__NL80211_FTM_RESP_ENTRY_ATTR_INVALID,
 	NL80211_FTM_RESP_ENTRY_ATTR_STATUS,
 	NL80211_FTM_RESP_ENTRY_ATTR_COMPLETE,
