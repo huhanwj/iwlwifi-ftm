@@ -4999,8 +4999,9 @@ enum nl80211_msrment_status {
  *
  * @__NL80211_FTM_TARGET_ATTR_INVALID: invalid
  * @NL80211_FTM_TARGET_ATTR_FREQ: Target's frequency (u32)
- * @NL80211_FTM_TARGET_ATTR_BW: Target's channel bandwidth. Only BWs supported
- *	by the device are allowed. (u8, one of &enum nl80211_chan_width)
+ * @NL80211_FTM_TARGET_ATTR_BW: Target's actual channel bandwidth. Only BWs
+ *	supported by the device are allowed. (u8, one of
+ *	&enum nl80211_chan_width)
  * @NL80211_FTM_TARGET_ATTR_CNTR_FREQ_1: Center freq., 1st segment, if relevant
  *	(u32)
  * @NL80211_FTM_TARGET_ATTR_CNTR_FREQ_2: Center freq., 2nd segment, if relevant
@@ -5008,23 +5009,39 @@ enum nl80211_msrment_status {
  * @NL80211_FTM_TARGET_ATTR_BSSID: Target's BSSID (6 octets)
  * @NL80211_FTM_TARGET_ATTR_ONE_SIDED: whether to perform a one-sided (flag set)
  *	or two-sided (flag clear) measurement. (flag)
- * @NL80211_FTM_TARGET_ATTR_NUM_OF_BURSTS: number of measurement iterations.
- *	Optional (default: 1). (u16)
+ * @NL80211_FTM_TARGET_ATTR_NUM_OF_BURSTS_EXP: Exponent of 2 of the number of
+ *	measurement iterations. Optional (default: 0). (u8)
  * @NL80211_FTM_TARGET_ATTR_BURST_PERIOD: Measurement periodicity in units of
- *	100ms. Ignored if num of bursts is 1. (u16)
+ *	100ms. Ignored if num of bursts exp is 0. (u16)
  * @NL80211_FTM_TARGET_ATTR_SAMPLES_PER_BURST: Number of measurement frames
  *	requested per burst. Optional (default: 2) (u8)
  * @NL80211_FTM_TARGET_ATTR_RETRIES: Number of retries per sample.
  *	Optional (default: 3). (u8)
+ * @NL80211_FTM_TARGET_ATTR_BURST_DURATION: duration of an rtt burst.
+ *	Valid values are 2-11 and 15. Optional (default: 15) (u8)
  * @NL80211_FTM_TARGET_ATTR_ASAP: Whether to perform the measurement in ASAP
- *	mode. Ignored if one-sided. (flag)
+ *	mode. Ignored if one-sided. Request will be refused if:
+ *	ASAP requested and %NL80211_FTM_CAPA_ASAP isn't set by the device, or
+ *	non-ASAP requested and %NL80211_FTM_CAPA_NON_ASAP isn't set by the
+ *	device. (flag)
  * @NL80211_FTM_TARGET_QUERY_LCI: Whether to include an LCI query in the
- *	request. (flag)
+ *	request. Request will be refused if %NL80211_FTM_CAPA_REQ_LCI isn't set
+ *	by the device. (flag)
  * @NL80211_FTM_TARGET_QUERY_CIVIC: Whether to include a CIVIC query in the
- *	request. (flag)
+ *	request. Request will be refused if %NL80211_FTM_CAPA_REQ_CIVIC isn't
+ *	set by the device. (flag)
  * @NL80211_FTM_TARGET_ATTR_COOKIE: Extra data for the use of the invoking
  *	component. This will be passed back to the caller in the response, along
  *	with the rest of the request. Optional. (u64)
+ * @NL80211_FTM_TARGET_ATTR_FTM_PREAMBLE: Allowed preamble types to be used for
+ *	FTM frames. Bitfield, as specified in @enum nl80211_ftm_preamble.
+ *	Request will be refused if the supplied bitfield isn't supported in
+ *	%NL80211_FTM_CAPA_PREAMBLE. (u8)
+ * @NL80211_FTM_TARGET_ATTR_FTM_BW: Allowed bandwidths to be used for FTM
+ *	frames. Bitfield, as specified in @enum nl80211_ftm_bw. Request will be
+ *	refused if the supplied bitfield isn't supported in
+ *	%NL80211_FTM_CAPA_BW. (u8)
+ * @NL80211_FTM_TARGET_ATTR_PAD: used for padding, ignore
  * @__NL80211_FTM_TARGET_ATTR_AFTER_LAST: internal
  * @NL80211_FTM_TARGET_ATTR_MAX: highest FTM target attribute
  */
@@ -5036,14 +5053,18 @@ enum nl80211_ftm_target {
 	NL80211_FTM_TARGET_ATTR_CNTR_FREQ_2,
 	NL80211_FTM_TARGET_ATTR_BSSID,
 	NL80211_FTM_TARGET_ATTR_ONE_SIDED,
-	NL80211_FTM_TARGET_ATTR_NUM_OF_BURSTS,
+	NL80211_FTM_TARGET_ATTR_NUM_OF_BURSTS_EXP,
 	NL80211_FTM_TARGET_ATTR_BURST_PERIOD,
 	NL80211_FTM_TARGET_ATTR_SAMPLES_PER_BURST,
 	NL80211_FTM_TARGET_ATTR_RETRIES,
+	NL80211_FTM_TARGET_ATTR_BURST_DURATION,
 	NL80211_FTM_TARGET_ATTR_ASAP,
 	NL80211_FTM_TARGET_ATTR_QUERY_LCI,
 	NL80211_FTM_TARGET_ATTR_QUERY_CIVIC,
 	NL80211_FTM_TARGET_ATTR_COOKIE,
+	NL80211_FTM_TARGET_ATTR_FTM_PREAMBLE,
+	NL80211_FTM_TARGET_ATTR_FTM_BW,
+	NL80211_FTM_TARGET_ATTR_PAD,
 
 	/* keep last */
 	__NL80211_FTM_TARGET_ATTR_AFTER_LAST,
