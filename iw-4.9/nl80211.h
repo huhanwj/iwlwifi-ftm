@@ -4944,7 +4944,7 @@ enum nl80211_sched_scan_plan {
 	__NL80211_SCHED_SCAN_PLAN_AFTER_LAST,
 	NL80211_SCHED_SCAN_PLAN_MAX =
 	__NL80211_SCHED_SCAN_PLAN_AFTER_LAST - 1
-;
+};
 /**
  * enum nl80211_msrment_type - measurement types
  *
