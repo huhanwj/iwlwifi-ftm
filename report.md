@@ -98,17 +98,17 @@ sudo ifconfig wlp2s0 up # 改成当前的网卡接口名称
 ### Initiator端（STA端）
 使用`iw`工具扫描 AP列表，获取支持FTM协议的AP：
 ```bash
-sudo iw dev <网卡设备名> scan > scan.txt #输出扫描结果到scan.txt
+sudo iw dev 网卡设备名 scan > scan.txt #输出扫描结果到scan.txt
 ```
 
 在`scan.txt`中搜索FTM，找到刚刚在AP端打开的AP，记下MAC地址和中心频率，创建配置文件，方法入下：
 ```bash
-echo <MAC地址> bw=40 cf=<中心频率> asap > conf
+echo MAC地址 bw=40 cf=中心频率 asap > conf
 ```
 
 执行测距：
 ```bash
-sudo iw dev <网卡设备名> measurement ftm_request conf
+sudo iw dev 网卡设备名 measurement ftm_request conf
 ```
 
 距离计算：
