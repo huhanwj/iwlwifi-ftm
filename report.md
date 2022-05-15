@@ -84,8 +84,8 @@ ftm_Initiator=1
 ```
 
 启动AP：
-```
-sudo hostapd <配置文件路径> 
+```bash
+sudo hostapd 配置文件路径
 ```
 
 若无法启动，可以尝试重启网卡：
@@ -95,7 +95,7 @@ sudo rfkill unblock wlan
 sudo ifconfig wlp2s0 up # 改成当前的网卡接口名称
 ```
 
-### Initiator端（STA端）
+### Initiator端（STA端）配置
 使用`iw`工具扫描 AP列表，获取支持FTM协议的AP：
 ```bash
 sudo iw dev 网卡设备名 scan > scan.txt #输出扫描结果到scan.txt
