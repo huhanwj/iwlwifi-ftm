@@ -62,7 +62,9 @@
  *
  *****************************************************************************/
 #include <linux/pci.h>
+#if LINUX_VERSION_IS_LESS(5,4,0)
 #include <linux/pci-aspm.h>
+#endif
 #include <linux/interrupt.h>
 #include <linux/debugfs.h>
 #include <linux/sched.h>
