@@ -1,7 +1,4 @@
 # iwlwifi-ftm
-Integrated WiFi FTM Linux Tool for Intel Dual Band WirelessAC 8265
+Integrated WiFi FTM Linux Tool for Intel WiFi Cards
 
-* Install code33-stable backport-iwlwifi driver
-* use the specified firmware 
-* enable FTM responder in hostapd
-* use the patched iw to do FTM
+Failed to both open `lar_disable` and `TOF_IS_RESPONDER` on kernel 5.3, no patch for 5G AP, project dropped.
